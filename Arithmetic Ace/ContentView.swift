@@ -10,9 +10,17 @@ import SwiftUI
 struct ContentView: View {
     
     //MARK: Stored properties
-    let multiplicand = Int.random(in: 1...12)
-    let multiplier = Int.random(in: 1...12)
+    @State var multiplicand = Int.random(in: 1...12)
+    @State var multiplier = Int.random(in: 1...12)
+   //This string contain whatever we put in
     @State var inputGiven = ""
+    
+    //Has an answer been checked?
+    @State var answerChecked = false
+    
+    //Was the answer given actually correct?
+    @State var answerCorrect = false
+    
     
     //MARK: Computed Property
     var correctProduct: Int{
@@ -35,15 +43,34 @@ struct ContentView: View {
             Divider()
             
             HStack{
-                Image(systemName: "checkmark.circle")
-                    .foregroundColor(.green)
+                ZStack{
+                    Image(systemName: "checkmark.circle")
+                        .foregroundColor(.green)
+                    //           Condition       true  false
+                        .opacity(answerCorrect ? 1.0 : 0.0 )
+                    Spacer()
+                    
+                    Image(systemName: "x.circle")
+                        .foregroundColor(.red)
+    //  Condition1             and Conditional2        true  false
+.opacity(answerChecked == true && answerCorrect == false ? 1.0 : 0.0)
+                        
+                }
+               
+        
                 Spacer()
+                
                 TextField("",
                           text: $inputGiven)
                     .multilineTextAlignment(.trailing)
             }
             
+            ZStack{
             Button(action: {
+                
+                // Answer has been checked!
+                answerChecked = true
+                
                 // Convert the input given to an integer, if  possible
                 guard let productGiven = Int(inputGiven) else {
                     //Sadness, not a number
@@ -53,9 +80,10 @@ struct ContentView: View {
                 //Check the anwser!
                 if productGiven == correctProduct {
                     //Celebrate!
+                    answerCorrect = true
                 }
                 else{
-                    //sadness, they are incorr
+                    //sadness, they are incorrect
                 }
             }, label: {
                 Text("Check Answer")
@@ -63,7 +91,32 @@ struct ContentView: View {
             })
                 .padding()
                 .buttonStyle(.bordered)
+                .opacity(answerChecked == true ? 0.0 : 1.0)
             
+            
+            
+            
+            Button(action: {
+                //Generate a new question
+                multiplicand = Int .random(in: 1...12)
+                multiplier = Int .random(in: 1...12)
+                
+                
+                //Reset properties that track
+                answerCorrect = false
+                answerChecked = false
+                
+                //Rest input field
+                inputGiven = ""
+            }, label: {
+                Text("New question")
+                    .font(.largeTitle)
+            })
+                .padding()
+                .buttonStyle(.bordered)
+                .opacity(answerChecked == true ? 1.0 : 0.0)
+            
+            }
             
             
             Spacer()
